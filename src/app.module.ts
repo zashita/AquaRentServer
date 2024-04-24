@@ -5,7 +5,8 @@ import {ConfigModule} from "@nestjs/config";
 import * as process from "process";
 import {User} from "./user/user.model";
 import { BoatModule } from './boat/boat.module';
-import { ModuleService } from './module/module.service';
+import {Boat} from "./boat/boat.model";
+import { OrderModule } from './order/order.module';
 
 @Module({
     imports:[
@@ -19,13 +20,14 @@ import { ModuleService } from './module/module.service';
             username: process.env.POSTGRES_USERNAME,
             password: process.env.POSTGRES_PASSWORD,
             database: process.env.POSTGRES_DB,
-            models: [User],
+            models: [User, Boat],
             autoLoadModels: true,
         }),
         UserModule,
         BoatModule,
+        OrderModule,
     ],
-    providers: [ModuleService]
+    providers: []
 })
 export class AppModule{
 }
