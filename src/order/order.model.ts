@@ -1,4 +1,6 @@
-import {Column, DataType, Model, Table} from "sequelize-typescript";
+import {BelongsTo, Column, DataType, ForeignKey, HasOne, Model, Table} from "sequelize-typescript";
+import {User} from "../user/user.model";
+import {Boat} from "../boat/boat.model";
 
 interface OrderCreationAttrs{
     user: string;
@@ -12,14 +14,22 @@ export class Order extends Model<Order, OrderCreationAttrs>{
     id: string;
 
     @Column({type: DataType.STRING, allowNull: false})
-    user: string;
-
-    @Column({type: DataType.STRING, allowNull: false})
-    boat: string;
-
-    @Column({type: DataType.STRING, allowNull: false})
     date: string;
 
     @Column({type: DataType.STRING, allowNull: false, defaultValue: 'processing'})
     state: string;
+
+    @ForeignKey(()=> User)
+    @Column({type: DataType.UUID})
+    userId: string;
+
+    @ForeignKey(()=> Boat)
+    @Column({type: DataType.UUID})
+    boatId: string;
+
+    @BelongsTo(() => User)
+    user: User;
+
+    @BelongsTo(() => Boat)
+    boat: Boat;
 }

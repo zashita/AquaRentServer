@@ -8,6 +8,9 @@ import { BoatModule } from './boat/boat.module';
 import {Boat} from "./boat/boat.model";
 import { OrderModule } from './order/order.module';
 import {Order} from "./order/order.model";
+import { RoleModule } from './role/role.module';
+import {Role} from "./role/role.model";
+import {UserRole} from "./role/userRoles.model";
 
 @Module({
     imports:[
@@ -21,12 +24,13 @@ import {Order} from "./order/order.model";
             username: process.env.POSTGRES_USERNAME,
             password: process.env.POSTGRES_PASSWORD,
             database: process.env.POSTGRES_DB,
-            models: [User, Boat, Order],
+            models: [User, Boat, Order, Role, UserRole],
             autoLoadModels: true,
         }),
         UserModule,
         BoatModule,
         OrderModule,
+        RoleModule,
     ],
     providers: []
 })

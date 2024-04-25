@@ -1,4 +1,8 @@
-import {Column, DataType, Model, Table} from "sequelize-typescript";
+import {BelongsToMany, Column, DataType, HasMany, Model, Table} from "sequelize-typescript";
+import {Order} from "../order/order.model";
+import {Boat} from "../boat/boat.model";
+import {Role} from "../role/role.model";
+import {UserRole} from "../role/userRoles.model";
 
 interface UserCreationAttrs{
     name: string;
@@ -14,6 +18,15 @@ export class User extends Model<User, UserCreationAttrs>{
 
     @Column({type: DataType.STRING, allowNull: false})
     password: string;
+
+    @HasMany(() => Order)
+    orders: Order[]
+
+    @HasMany(()=> Boat)
+    boats: Boat[]
+
+    @BelongsToMany(() => Role, () => UserRole)
+    roles: Role[]
 
 
 }
