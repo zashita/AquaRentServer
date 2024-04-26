@@ -1,4 +1,4 @@
 export interface RoleCreationDto{
-    readonly name: string;
+    readonly value: string;
     readonly description: string;
 }

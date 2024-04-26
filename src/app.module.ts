@@ -11,6 +11,7 @@ import {Order} from "./order/order.model";
 import { RoleModule } from './role/role.module';
 import {Role} from "./role/role.model";
 import {UserRole} from "./role/userRoles.model";
+import { AuthModule } from './auth/auth.module';
 
 @Module({
     imports:[
@@ -31,6 +32,7 @@ import {UserRole} from "./role/userRoles.model";
         BoatModule,
         OrderModule,
         RoleModule,
+        AuthModule,
     ],
     providers: []
 })
