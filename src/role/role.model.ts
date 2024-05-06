@@ -2,7 +2,7 @@ import {BelongsToMany, Column, DataType, Model, Table} from "sequelize-typescrip
 import {UserRole} from "./userRoles.model";
 import {User} from "../user/user.model";
 interface RoleCreationAttrs{
-    name: string;
+    value: string;
     description: string;
 }
 

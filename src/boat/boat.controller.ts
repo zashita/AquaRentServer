@@ -1,6 +1,7 @@
-import {Body, Controller, Get, Post} from '@nestjs/common';
+import {Body, Controller, Get, Post, UploadedFile, UseInterceptors} from '@nestjs/common';
 import {BoatService} from "./boat.service";
 import {BoatCreationDto} from "./dto/boatCreation.dto";
+import {FileInterceptor} from "@nestjs/platform-express";
 
 @Controller('boats')
 export class BoatController {
@@ -8,8 +9,10 @@ export class BoatController {
     }
 
     @Post()
-    async create(@Body() dto: BoatCreationDto){
-        return await this.BoatService.create(dto);
+    @UseInterceptors(FileInterceptor('image'))
+    async create(@Body() dto: BoatCreationDto,
+                 @UploadedFile() image){
+        return await this.BoatService.create(dto, image);
     }
 
     @Get()

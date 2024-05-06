@@ -5,9 +5,17 @@ import {Order} from "../order/order.model";
 
 interface BoatCreationAttrs{
     name: string;
-    owner: string;
+    userId: string;
     description: string;
+    image: string
 }
+
+export enum BoatTypes{
+    YACHT = 'yacht',
+    BOAT = 'boat',
+    KATAMARAN = 'katamaran',
+}
+
 
 @Table({tableName: 'boats'})
 export class Boat extends Model<Boat, BoatCreationAttrs>{
@@ -21,9 +29,17 @@ export class Boat extends Model<Boat, BoatCreationAttrs>{
     @Column({type: DataType.UUID})
     userId: string;
 
+    @Column({type: DataType.STRING, defaultValue: BoatTypes.YACHT})
+    type: BoatTypes;
+
+    @Column({type: DataType.INTEGER, defaultValue: 0})
+    views: number;
     
     @Column({type: DataType.STRING})
-    description: string
+    description: string;
+
+    @Column({type: DataType.STRING})
+    image: string
 
     @HasMany(()=> Order)
     orders: Order[];
