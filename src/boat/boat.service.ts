@@ -1,9 +1,10 @@
-import { Injectable } from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {InjectModel} from "@nestjs/sequelize";
 import {Boat} from "./boat.model";
 import {BoatCreationDto} from "./dto/boatCreation.dto";
 import {UserService} from "../user/user.service";
 import {FilesService} from "../files/files.service";
+import {where} from "sequelize";
 
 @Injectable()
 export class BoatService {
@@ -31,6 +32,19 @@ export class BoatService {
             return boats
         } catch (e) {
             console.log("Ошибка при выводе лодок")
+        }
+    }
+
+    async getBoatById(id: string): Promise<Boat>{
+        try {
+            const boat = await this.boatRepository.findOne({where: {id}})
+            if(!boat){
+                throw new HttpException( HttpStatus,.404)
+            }
+            return boat;
+        } catch (e) {
+            console.log(e, 'Ошибка при промотре лодки')
+
         }
     }
 

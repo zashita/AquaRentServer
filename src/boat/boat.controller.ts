@@ -1,4 +1,4 @@
-import {Body, Controller, Get, Post, UploadedFile, UseInterceptors} from '@nestjs/common';
+import {Body, Controller, Get, Param, Post, UploadedFile, UseInterceptors} from '@nestjs/common';
 import {BoatService} from "./boat.service";
 import {BoatCreationDto} from "./dto/boatCreation.dto";
 import {FileInterceptor} from "@nestjs/platform-express";
@@ -18,6 +18,11 @@ export class BoatController {
     @Get()
     async getAll(){
         return await this.BoatService.getAll()
+    }
+
+    @Get("/:id")
+    async getBoatById(@Param('id') id: string){
+        return await this.BoatService.getBoatById(id)
     }
 
 }
