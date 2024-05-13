@@ -28,7 +28,7 @@ export class BoatService {
 
     async getAll(){
         try {
-            const boats = await this.boatRepository.findAll();
+            const boats = await this.boatRepository.findAll({include: {all: true}});
             return boats
         } catch (e) {
             console.log("Ошибка при выводе лодок")

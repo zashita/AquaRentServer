@@ -13,6 +13,9 @@ import {FilesModule} from "../files/files.module";
       SequelizeModule.forFeature([Boat]),
       UserModule,
       FilesModule
-  ]
+  ],
+    exports:[
+        BoatService
+    ]
 })
 export class BoatModule {}
