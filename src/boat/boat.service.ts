@@ -48,5 +48,24 @@ export class BoatService {
         }
     }
 
+    async deleteById(id: string){
+        try {
+            const boat = await this.boatRepository.destroy({where: {id}})
+            return boat
+        } catch (e) {
+            console.log(e, 'Ошибка при удалении лодки')
+        }
+    }
+
+    async increaseViews(id: string){
+        try {
+            const boat = await this.boatRepository.findOne({where:{id}})
+            return await boat.increment('views')
+        }
+        catch (e) {
+            console.log(e)
+        }
+    }
+
 
 }

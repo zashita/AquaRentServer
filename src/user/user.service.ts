@@ -33,7 +33,19 @@ export class UserService {
     async getAllUsers(){
         try {
             const users = await this.userRepository.findAll({include: {all: true}})
-            return users;
+            return users.map((user)=>{
+                return{
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    createdAt: user.createdAt,
+                    updatedAt: user.updatedAt,
+                    orders: user.orders,
+                    boats: user.boats,
+                    roles: user.roles,
+                }
+
+            });
         }
         catch (e) {
             console.log(`${e} Ошибка при выводе всех пользователя`)
@@ -47,5 +59,23 @@ export class UserService {
     async getUserById(id: string){
         const user = this.userRepository.findOne({where: {id}})
         return user;
+    }
+
+    async getUserProfile(id: string){
+        const user = await this.userRepository.findOne({where: {id}, include: {all: true}})
+        return{
+            id: user.id,
+            name: user.name,
+            email: user.email,
+            createdAt: user.createdAt,
+            updatedAt: user.updatedAt,
+            orders: user.orders,
+            boats: user.boats,
+            roles: user.roles,
+    }
+    }
+    async deleteUserById(id: string){
+        const user = await this.userRepository.destroy({where:{id}})
+        return user
     }
 }

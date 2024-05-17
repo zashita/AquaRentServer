@@ -16,7 +16,7 @@ export class Order extends Model<Order, OrderCreationAttrs>{
     @Column({type: DataType.STRING, allowNull: false})
     date: string;
 
-    @Column({type: DataType.STRING, allowNull: false, defaultValue: 'processing'})
+    @Column({type: DataType.STRING, allowNull: false, defaultValue: 'waiting for sellers confirmation'})
     state: string;
 
     @ForeignKey(()=> User)
