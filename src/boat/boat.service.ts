@@ -5,20 +5,41 @@ import {BoatCreationDto} from "./dto/boatCreation.dto";
 import {UserService} from "../user/user.service";
 import {FilesService} from "../files/files.service";
 import {where} from "sequelize";
+import {LakeService} from "../lake/lake.service";
 
 @Injectable()
 export class BoatService {
     constructor(@InjectModel(Boat) private boatRepository: typeof Boat,
                 private userService: UserService,
-                private fileService: FilesService) {
+                private fileService: FilesService,
+                private lakeService: LakeService) {
     }
 
     async create(dto: BoatCreationDto, image: File){
         try {
             const imagePath = await this.fileService.createFile(image);
-            const boat = await this.boatRepository.create({...dto, image: imagePath})
-            const user = await this.userService.getUserById(dto.userId)
+            const captain = dto.captain === 'true';
+            const user = await this.userService.getUserById(dto.userId);
+            const lake = await this.lakeService.getById(dto.lakeId);
+            console.log("DTO ",dto)
+            console.log("CAPTAIN ",captain)
+            const normalDto = {
+                ...dto,
+                image: imagePath,
+                price: Number(dto.price),
+                passengerCapacity: Number(dto.passengerCapacity),
+                captain: captain,
+                lakeName: lake.name,
+                userEmail: user.email
+            }
+            console.log("NORMAL",normalDto)
+
+            const boat = await this.boatRepository.create(normalDto)
+            console.log("BOAT", boat)
+
+            await lake.$add('boats', [boat.id])
             await user.$add('boats', [boat.id])
+
             console.log(boat)
             return boat;
         } catch (e) {

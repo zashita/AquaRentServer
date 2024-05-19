@@ -16,9 +16,10 @@ export class OrderService {
 
     async create(dto: OrderCreationDto): Promise<Order>{
         try{
-            const order = await this.orderRepository.create(dto);
             const user = await this.userService.getUserById(dto.user);
             const boat = await this.boatService.getBoatById(dto.boat);
+            const order = await this.orderRepository.create({...dto, userEmail: user.email});
+
             if(!user || !boat){
                 throw new HttpException('User not found', HttpStatus.BAD_REQUEST)
             }
@@ -26,6 +27,7 @@ export class OrderService {
             await user.$add('orders', [order.id])
             order.userId = user.id
             order.boatId = boat.id
+            order.userEmail = user.email
             return order
         }catch (e) {
             console.log('Ошибка при создании заказа');

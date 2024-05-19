@@ -5,6 +5,7 @@ import {SequelizeModule} from "@nestjs/sequelize";
 import {Boat} from "./boat.model";
 import {UserModule} from "../user/user.module";
 import {FilesModule} from "../files/files.module";
+import {LakeModule} from "../lake/lake.module";
 
 @Module({
   providers: [BoatService],
@@ -12,7 +13,8 @@ import {FilesModule} from "../files/files.module";
   imports:[
       SequelizeModule.forFeature([Boat]),
       UserModule,
-      FilesModule
+      FilesModule,
+      LakeModule
   ],
     exports:[
         BoatService

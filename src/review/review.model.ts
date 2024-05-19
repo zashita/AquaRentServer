@@ -2,29 +2,18 @@ import {BelongsTo, Column, DataType, ForeignKey, HasOne, Model, Table} from "seq
 import {User} from "../user/user.model";
 import {Boat} from "../boat/boat.model";
 
-interface OrderCreationAttrs{
+interface ReviewCreationAttrs{
     user: string;
-    userEmail: string;
     boat: string;
-    date: string;
+    userEmail: string;
+    rating: number;
+    comment?: string
 }
 
-export enum OrderStates{
-    WAITING = "Заказ ожидает подверждения арендодателя",
-    CONFIRMED = 'Заказ подтвержден арендодателем',
-    FINISHED = 'Заказ завершен, вы можете оставить отзыв'
-}
-
-@Table({tableName: 'orders'})
-export class Order extends Model<Order, OrderCreationAttrs>{
+@Table({tableName: 'reviews'})
+export class Review extends Model<Review, ReviewCreationAttrs>{
     @Column({type: DataType.UUID, primaryKey: true, unique: true, defaultValue: DataType.UUIDV4})
     id: string;
-
-    @Column({type: DataType.STRING, allowNull: false})
-    date: string;
-
-    @Column({type: DataType.STRING, allowNull: false, defaultValue: OrderStates.WAITING})
-    state: OrderStates;
 
     @ForeignKey(()=> User)
     @Column({type: DataType.UUID})
@@ -37,6 +26,15 @@ export class Order extends Model<Order, OrderCreationAttrs>{
     @ForeignKey(()=> Boat)
     @Column({type: DataType.UUID})
     boatId: string;
+
+    @Column({type: DataType.INTEGER, allowNull: false})
+    rating: number;
+
+    @Column({type: DataType.STRING, allowNull: true})
+    comment: string;
+
+
+
 
 
     @BelongsTo(() => User)
