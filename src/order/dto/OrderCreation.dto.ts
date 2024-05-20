@@ -1,5 +1,5 @@
 export interface OrderCreationDto{
-    readonly user: string;
-    readonly boat: string;
+    readonly userId: string;
+    readonly boatId: string;
     readonly date: string;
 }

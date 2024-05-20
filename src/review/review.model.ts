@@ -19,7 +19,6 @@ export class Review extends Model<Review, ReviewCreationAttrs>{
     @Column({type: DataType.UUID})
     userId: string;
 
-    @ForeignKey(()=>User)
     @Column({type: DataType.STRING})
     userEmail: string
 

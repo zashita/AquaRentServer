@@ -1,7 +1,6 @@
 import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
 import {InjectModel} from "@nestjs/sequelize";
-import {User} from "../user/user.model";
-import {Order} from "./order.model";
+import {Order, OrderStates} from "./order.model";
 import {OrderCreationDto} from "./dto/OrderCreation.dto";
 import {UserService} from "../user/user.service";
 import {BoatService} from "../boat/boat.service";
@@ -16,8 +15,14 @@ export class OrderService {
 
     async create(dto: OrderCreationDto): Promise<Order>{
         try{
-            const user = await this.userService.getUserById(dto.user);
-            const boat = await this.boatService.getBoatById(dto.boat);
+            console.log("DTO", dto)
+            const user = await this.userService.getUserById(dto.userId);
+            const boat = await this.boatService.getBoatById(dto.boatId);
+            const orders = await this.orderRepository.findAll();
+            if(orders.find((order)=> order.date === dto.date && order.boatId === dto.boatId))
+            {
+                throw new Error('Судно уже забронировано на этот день')
+            }
             const order = await this.orderRepository.create({...dto, userEmail: user.email});
 
             if(!user || !boat){
@@ -30,7 +35,8 @@ export class OrderService {
             order.userEmail = user.email
             return order
         }catch (e) {
-            console.log('Ошибка при создании заказа');
+            console.log(e);
+            throw new HttpException("Судно уже забронировано на этот день", HttpStatus.BAD_REQUEST)
         }
     }
 
@@ -41,5 +47,28 @@ export class OrderService {
         } catch (e) {
             console.log('Ошибка при выводе заказов')
         }
+    }
+
+    async getUserBoatsOrders(userId: string){
+        const orders = await this.orderRepository.findAll({include:{all: true}})
+        const userOrders = orders.filter((order)=> order.boat.userId === userId)
+        return userOrders
+
+
+    }
+
+    async updateOrderState(id: string){
+        const order = await this.orderRepository.findOne({where: {id}})
+        if(order.state === OrderStates.WAITING){
+            order.state = OrderStates.CONFIRMED;
+            await order.save();
+            return order
+        }
+        if(order.state === OrderStates.CONFIRMED){
+            order.state = OrderStates.FINISHED;
+            await order.save();
+            return order
+        }
+        else return order
     }
 }

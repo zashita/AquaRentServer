@@ -19,24 +19,31 @@ export class ReviewService {
         try{
             const user = await this.userService.getUserById(dto.userId);
             const boat = await this.boatService.getBoatById(dto.boatId);
+            const reviews = await this.reviewRepository.findAll()
+            if(reviews.find((review)=> review.userId === dto.userId && review.boatId === dto.boatId)){
+                throw new Error('Пользователь уже оставил отзыв на данное объявление')
+            }
             const review = await this.reviewRepository.create({...dto, userEmail: user.email});
             if(!user || !boat){
                 throw new HttpException('User not found', HttpStatus.BAD_REQUEST)
             }
-            await boat.$add('reviews', [review.id])
-            await user.$add('reviews', [review.id])
+
             review.userId = user.id
             review.boatId = boat.id
-            review
+            review.userEmail = user.email
+            await review.save()
+            boat.reviews?.push(review)
+            await boat.save();
             return review
         }catch (e) {
-            console.log('Ошибка при создании заказа');
+            console.log(e,'Ошибка при создании отзыва');
+            throw new HttpException('Пользователь уже оставил отзыв на данное судно', HttpStatus.BAD_REQUEST)
         }
     }
     async isCustomer(userId: string, boatId: string){
         const user = await this.userService.getUserById(userId);
         if (
-            user.orders.find
+            user.orders?.find
             (
                 (order) => order.state === OrderStates.FINISHED && order.boatId === boatId
             )

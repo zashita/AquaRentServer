@@ -1,14 +1,17 @@
-import { Injectable } from '@nestjs/common';
+import {forwardRef, Inject, Injectable} from '@nestjs/common';
 import {InjectModel} from "@nestjs/sequelize";
 import {User} from "./user.model";
 import {UserCreationDto} from "./dto/userCreation.dto";
 import {RoleService} from "../role/role.service";
+import {Order} from "../order/order.model";
+import {OrderService} from "../order/order.service";
 
 @Injectable()
 export class UserService {
 
     constructor(@InjectModel(User) private userRepository: typeof User,
-                private roleService: RoleService) {
+                private roleService: RoleService,
+               ) {
     }
 
     async createUser(dto: UserCreationDto){
@@ -23,6 +26,23 @@ export class UserService {
 
 
 
+            return user;
+        }
+        catch (e) {
+            console.log(`${e} Ошибка при создании пользователя`)
+        }
+    }
+
+    async createAdmin(dto: UserCreationDto){
+        try {
+            const user = await this.userRepository.create(dto)
+            console.log(dto)
+            const roles = await this.roleService.getAll()
+            const rolesId = roles.map((role)=> role.id)
+
+            await user.$set('roles', rolesId);
+            console.log(user)
+            user.roles = roles
             return user;
         }
         catch (e) {
@@ -53,11 +73,11 @@ export class UserService {
     }
 
     async getUserByEmail(email: string){
-        const user = this.userRepository.findOne({where: {email}})
+        const user = this.userRepository.findOne({where: {email}, include: {all: true}})
         return user;
     }
     async getUserById(id: string){
-        const user = this.userRepository.findOne({where: {id}})
+        const user = this.userRepository.findOne({where: {id}, include: {all: true}})
         return user;
     }
 
@@ -78,4 +98,16 @@ export class UserService {
         const user = await this.userRepository.destroy({where:{id}})
         return user
     }
+
+    async setSeller(id: string){
+        const user = await this.userRepository.findOne({where: {id}, include: {all: true}})
+        if(!user.roles.find((role)=> role.value === 'SELLER')){
+            const sellerRole = await this.roleService.getRoleByValue('SELLER')
+            await user.$add('roles', [sellerRole.id])
+            user.roles.push(sellerRole)
+        }
+        return user
+    }
+
+
 }

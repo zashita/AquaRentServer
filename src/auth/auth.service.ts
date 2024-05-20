@@ -27,6 +27,17 @@ export class AuthService {
         }
     }
 
+    async registrationAdmin(dto: UserCreationDto){
+        const candidate = await this.userService.getUserByEmail(dto.email);
+        if(candidate){
+            throw new HttpException('Пользователь с таким email уже зарегистрирован', HttpStatus.BAD_REQUEST);
+        } else{
+            const hashedPassword = await bcrypt.hash(dto.password, 5);
+            const user = await this.userService.createAdmin({...dto, password: hashedPassword})
+            return await this.generateToken(user)
+        }
+    }
+
     private async generateToken(user: User){
         const roleValues = user.roles?.map((role) => role.value)
         const payload = {email: user.email, id: user.id, roles: roleValues}

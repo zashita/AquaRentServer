@@ -16,7 +16,10 @@ export class ReviewController {
 
     @Post()
     async create(@Body() dto: ReviewCreationDto):Promise<Review>{
-        return await this.reviewService.create(dto);
+        if(await this.reviewService.isCustomer(dto.userId, dto.boatId)){
+            return await this.reviewService.create(dto);
+        }
+        throw new HttpException("ПОльзователь не имеет права оставлять комментарий", HttpStatus.BAD_REQUEST)
     }
 
     @Get()

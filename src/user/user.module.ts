@@ -8,6 +8,7 @@ import {Order} from "../order/order.model";
 import {Role} from "../role/role.model";
 import {UserRole} from "../role/userRoles.model";
 import {RoleModule} from "../role/role.module";
+import {OrderModule} from "../order/order.module";
 
 @Module({
   providers: [UserService],

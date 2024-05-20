@@ -3,6 +3,7 @@ import {STRING} from "sequelize";
 import {User} from "../user/user.model";
 import {Order} from "../order/order.model";
 import {Lake} from "../lake/lake.model";
+import {Review} from "../review/review.model";
 
 interface BoatCreationAttrs{
     name: string;
@@ -75,6 +76,9 @@ export class Boat extends Model<Boat, BoatCreationAttrs>{
 
     @HasMany(()=> Order)
     orders: Order[];
+
+    @HasMany(() => Review)
+    reviews: Review[]
 
     @BelongsTo(()=>User)
     owner: User;

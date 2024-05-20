@@ -13,6 +13,6 @@ import {BoatModule} from "../boat/boat.module";
       SequelizeModule.forFeature([Order]),
       UserModule,
       BoatModule
-  ]
+  ],
 })
 export class OrderModule {}
