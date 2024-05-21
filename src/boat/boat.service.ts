@@ -1,10 +1,10 @@
-import {HttpException, HttpStatus, Injectable} from '@nestjs/common';
+import {HttpException, HttpStatus, Injectable, Query} from '@nestjs/common';
 import {InjectModel} from "@nestjs/sequelize";
-import {Boat} from "./boat.model";
+import {Boat, BoatTypes, MoveType} from "./boat.model";
 import {BoatCreationDto} from "./dto/boatCreation.dto";
 import {UserService} from "../user/user.service";
 import {FilesService} from "../files/files.service";
-import {where} from "sequelize";
+import {Op, where} from "sequelize";
 import {LakeService} from "../lake/lake.service";
 
 @Injectable()
@@ -47,14 +47,38 @@ export class BoatService {
         }
     }
 
-    async getAll(){
+    async getAll(type?: string,
+                 passengerCapacity?: number,
+                 lakeName?: string,
+                 price?: number,
+                 captain?: boolean){
         try {
             const boats = await this.boatRepository.findAll({include: {all: true}});
             return boats
         } catch (e) {
-            console.log("Ошибка при выводе лодок")
+            console.log(e, "Ошибка при выводе лодок")
         }
     }
+
+    async filter(type: BoatTypes,
+                 moveType: MoveType,
+                 lakeName: string,
+                 captain: boolean){
+        try {
+            const boats = await this.boatRepository.findAll({include: {all: true},
+                where:{type, lakeName, captain, moveType}});
+            return boats
+
+            // const boats2 = await this.boatRepository.findAll({where:{
+            //     type: {$regex: new RegExp(type, 'i')},
+            //     lakeName: {$regex: new RegExp(lakeName, 'i')}
+            //
+            //     }})
+        } catch (e) {
+            console.log(e, "Ошибка при выводе лодок")
+        }
+    }
+
 
     async getBoatById(id: string): Promise<Boat>{
         try {

@@ -26,6 +26,12 @@ export enum BoatTypes{
     HYDROCYCLE= 'Гидроцикл'
 }
 
+export enum MoveType{
+    WIND = 'Парус',
+    ENGINE = 'Двигатель',
+    HAND = 'Мышечная сила',
+}
+
 
 
 @Table({tableName: 'boats'})

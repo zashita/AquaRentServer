@@ -18,10 +18,13 @@ export class OrderService {
             console.log("DTO", dto)
             const user = await this.userService.getUserById(dto.userId);
             const boat = await this.boatService.getBoatById(dto.boatId);
-            const orders = await this.orderRepository.findAll();
+            const orders = await this.orderRepository.findAll({include: {all: true}});
             if(orders.find((order)=> order.date === dto.date && order.boatId === dto.boatId))
             {
                 throw new Error('Судно уже забронировано на этот день')
+            }
+            if(orders.find((order)=> boat.userId === dto.userId)){
+                throw new Error('Нельзя заказать свою лодку')
             }
             const order = await this.orderRepository.create({...dto, userEmail: user.email});
 
