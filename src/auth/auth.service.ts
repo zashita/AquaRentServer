@@ -23,7 +23,7 @@ export class AuthService {
         } else{
             const hashedPassword = await bcrypt.hash(dto.password, 5);
             const user = await this.userService.createUser({...dto, password: hashedPassword})
-            return await this.generateToken(user)
+            if(user) return await this.generateToken(user)
         }
     }
 
@@ -39,8 +39,8 @@ export class AuthService {
     }
 
     private async generateToken(user: User){
-        const roleValues = user.roles?.map((role) => role.value)
-        const payload = {email: user.email, id: user.id, roles: roleValues}
+        const roleValues = user?.roles?.map((role) => role.value)
+        const payload = {email: user?.email, id: user?.id, roles: roleValues}
         return{
             token: this.jwtService.sign(payload)
         }

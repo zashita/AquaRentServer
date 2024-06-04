@@ -6,7 +6,9 @@ interface OrderCreationAttrs{
     user: string;
     userEmail: string;
     boat: string;
-    date: string;
+    date: number;
+    dateEnd: number;
+    price: number;
 }
 
 export enum OrderStates{
@@ -20,8 +22,14 @@ export class Order extends Model<Order, OrderCreationAttrs>{
     @Column({type: DataType.UUID, primaryKey: true, unique: true, defaultValue: DataType.UUIDV4})
     id: string;
 
-    @Column({type: DataType.STRING, allowNull: false})
-    date: string;
+    @Column({type: DataType.INTEGER, allowNull: false})
+    date: number;
+
+    @Column({type: DataType.INTEGER, allowNull: false})
+    dateEnd: number;
+
+    @Column({type: DataType.FLOAT, allowNull: false})
+    price: number;
 
     @Column({type: DataType.STRING, allowNull: false, defaultValue: OrderStates.WAITING})
     state: OrderStates;

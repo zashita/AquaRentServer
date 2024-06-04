@@ -32,6 +32,9 @@ export class Review extends Model<Review, ReviewCreationAttrs>{
     @Column({type: DataType.STRING, allowNull: true})
     comment: string;
 
+    @Column({type: DataType.STRING, allowNull: true})
+    answer: string;
+
 
 
 

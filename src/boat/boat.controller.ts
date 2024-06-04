@@ -21,6 +21,11 @@ export class BoatController {
         return await this.BoatService.getAll()
     }
 
+    @Get("/admin")
+    async getAllAdmin(){
+        return await this.BoatService.getAllAdmin()
+    }
+
     @Get('/filter')
     async filter(
         @Query('type') type?: BoatTypes,
@@ -35,6 +40,11 @@ export class BoatController {
     @Put('/:id')
     async increaseBoatViews(@Param('id') id: string){
         return this.BoatService.increaseViews(id);
+    }
+
+    @Put('confirm/:id')
+    async confirmBoat(@Param('id') id: string){
+        return this.BoatService.confirmBoat(id);
     }
 
     @Get("/:id")

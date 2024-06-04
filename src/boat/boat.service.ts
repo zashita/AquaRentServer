@@ -1,4 +1,4 @@
-import {HttpException, HttpStatus, Injectable, Query} from '@nestjs/common';
+import {forwardRef, HttpException, HttpStatus, Inject, Injectable, Query} from '@nestjs/common';
 import {InjectModel} from "@nestjs/sequelize";
 import {Boat, BoatTypes, MoveType} from "./boat.model";
 import {BoatCreationDto} from "./dto/boatCreation.dto";
@@ -6,13 +6,19 @@ import {UserService} from "../user/user.service";
 import {FilesService} from "../files/files.service";
 import {Op, where} from "sequelize";
 import {LakeService} from "../lake/lake.service";
+import {OrderService} from "../order/order.service";
+import {Order} from "../order/order.model";
 
 @Injectable()
 export class BoatService {
     constructor(@InjectModel(Boat) private boatRepository: typeof Boat,
                 private userService: UserService,
                 private fileService: FilesService,
-                private lakeService: LakeService) {
+                private lakeService: LakeService,
+                @Inject(forwardRef(() => OrderService))
+                private orderService: OrderService,
+                @InjectModel(Order) private orderRepository: typeof Order
+    ) {
     }
 
     async create(dto: BoatCreationDto, image: File){
@@ -30,7 +36,8 @@ export class BoatService {
                 passengerCapacity: Number(dto.passengerCapacity),
                 captain: captain,
                 lakeName: lake.name,
-                userEmail: user.email
+                userEmail: user.email,
+                confirmed: false
             }
             console.log("NORMAL",normalDto)
 
@@ -53,7 +60,31 @@ export class BoatService {
                  price?: number,
                  captain?: boolean){
         try {
-            const boats = await this.boatRepository.findAll({include: {all: true}});
+            const params = [];
+            if (type) params.push({})
+            const boats = await this.boatRepository.findAll(
+                {
+                    where: {confirmed: true},
+                    attributes: {exclude: ['orders', 'userId', 'lakeId', 'description', 'updatedAt', 'userEmail']},
+                    order: [['id' , 'DESC']]
+
+
+                });
+
+            return boats
+        } catch (e) {
+            console.log(e, "Ошибка при выводе лодок")
+        }
+    }
+
+    async getAllAdmin(type?: string,
+                 passengerCapacity?: number,
+                 lakeName?: string,
+                 price?: number,
+                 captain?: boolean){
+        try {
+            const boats = await this.boatRepository.findAll({include: {all: true},
+            order: [['id' , 'DESC']]});
             return boats
         } catch (e) {
             console.log(e, "Ошибка при выводе лодок")
@@ -66,7 +97,7 @@ export class BoatService {
                  captain: boolean){
         try {
             const boats = await this.boatRepository.findAll({include: {all: true},
-                where:{type, lakeName, captain, moveType}});
+                where:{type, lakeName, captain, moveType, confirmed: true}});
             return boats
 
             // const boats2 = await this.boatRepository.findAll({where:{
@@ -79,10 +110,15 @@ export class BoatService {
         }
     }
 
-
+    async confirmBoat(id: string){
+        const boat = await this.boatRepository.findOne({where: {id}})
+        boat.confirmed = true;
+        await boat.save();
+        return boat;
+    }
     async getBoatById(id: string): Promise<Boat>{
         try {
-            const boat = await this.boatRepository.findOne({where: {id}})
+            const boat = await this.boatRepository.findOne({where: {id}, include: {all: true}})
             if(!boat){
                 throw new HttpException( HttpStatus,.404)
             }
@@ -95,8 +131,13 @@ export class BoatService {
 
     async deleteById(id: string){
         try {
-            const boat = await this.boatRepository.destroy({where: {id}})
-            return boat
+            const boat = await this.boatRepository.findOne({where: {id}})
+            const orders = await this.orderRepository.destroy({where: {boatId: id}})
+            await boat.destroy();
+            // await orders.map((order)=> {
+            //
+            // })
+            return boat;
         } catch (e) {
             console.log(e, 'Ошибка при удалении лодки')
         }

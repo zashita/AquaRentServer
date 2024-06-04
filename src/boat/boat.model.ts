@@ -17,6 +17,7 @@ interface BoatCreationAttrs{
     moveType: string;
     captain: boolean;
     userEmail: string;
+    confirmed: boolean;
 }
 
 export enum BoatTypes{
@@ -78,7 +79,10 @@ export class Boat extends Model<Boat, BoatCreationAttrs>{
     description: string;
 
     @Column({type: DataType.STRING})
-    image: string
+    image: string;
+
+    @Column({type: DataType.BOOLEAN})
+    confirmed: boolean;
 
     @HasMany(()=> Order)
     orders: Order[];
@@ -90,6 +94,8 @@ export class Boat extends Model<Boat, BoatCreationAttrs>{
     owner: User;
 
     @BelongsTo(()=> Lake)
-    lake: Lake
+    lake: Lake;
+
+
 
 }

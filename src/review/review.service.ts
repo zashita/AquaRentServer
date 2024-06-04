@@ -20,12 +20,15 @@ export class ReviewService {
             const user = await this.userService.getUserById(dto.userId);
             const boat = await this.boatService.getBoatById(dto.boatId);
             const reviews = await this.reviewRepository.findAll()
+            if(! await this.isCustomer(dto.userId, dto.boatId)){
+                throw new Error('Нет полномочий')
+            }
             if(reviews.find((review)=> review.userId === dto.userId && review.boatId === dto.boatId)){
-                throw new Error('Пользователь уже оставил отзыв на данное объявление')
+                throw new Error('Уже оставлял')
             }
             const review = await this.reviewRepository.create({...dto, userEmail: user.email});
             if(!user || !boat){
-                throw new HttpException('User not found', HttpStatus.BAD_REQUEST)
+                throw new Error('User not found')
             }
 
             review.userId = user.id
@@ -36,9 +39,30 @@ export class ReviewService {
             await boat.save();
             return review
         }catch (e) {
-            console.log(e,'Ошибка при создании отзыва');
-            throw new HttpException('Пользователь уже оставил отзыв на данное судно', HttpStatus.BAD_REQUEST)
+            if(e.message === 'Нет полномочий'){
+                throw new HttpException(e, 405)
+            }
+
+            if(e.message === 'Уже оставлял'){
+                throw new HttpException(e, 406)
+            }
+
+            else throw new HttpException(e, 407)
+
+
         }
+    }
+
+    async deleteById(id: string){
+        const review = await this.reviewRepository.destroy({where: {id}})
+        return review;
+    }
+
+    async addAnswer(id: string, text: string){
+        const review = await this.reviewRepository.findOne({where: {id}})
+        review.answer = text;
+        await review.save();
+        return review;
     }
     async isCustomer(userId: string, boatId: string){
         const user = await this.userService.getUserById(userId);

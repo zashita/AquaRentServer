@@ -5,12 +5,17 @@ import {UserCreationDto} from "./dto/userCreation.dto";
 import {RoleService} from "../role/role.service";
 import {Order} from "../order/order.model";
 import {OrderService} from "../order/order.service";
+import {FilesService} from "../files/files.service";
+import {Boat} from "../boat/boat.model";
 
 @Injectable()
 export class UserService {
 
     constructor(@InjectModel(User) private userRepository: typeof User,
+                @InjectModel(Order) private orderRepository: typeof Order,
+                @InjectModel(Boat) private boatRepository: typeof Boat,
                 private roleService: RoleService,
+                private fileService: FilesService
                ) {
     }
 
@@ -50,9 +55,20 @@ export class UserService {
         }
     }
 
-    async getAllUsers(){
+    async changePicture(id: string, image: File){
+        console.log(image)
+        const imagePath = await this.fileService.createFile(image);
+        const user = await this.userRepository.findOne({where: {id}})
+        user.picture = imagePath;
+        await user.save()
+
+    }
+
+    async getNotConfirmed(){
         try {
-            const users = await this.userRepository.findAll({include: {all: true}})
+            const users = await this.userRepository.findAll({include: {all: true},
+                order: [['id' , 'DESC']],
+                where:{waitingForStatusConfirmation: true}})
             return users.map((user)=>{
                 return{
                     id: user.id,
@@ -63,6 +79,33 @@ export class UserService {
                     orders: user.orders,
                     boats: user.boats,
                     roles: user.roles,
+                    waitingForStatusConfirmation: user.waitingForStatusConfirmation
+
+
+                }
+
+            });
+        } catch (e) {
+
+        }
+    }
+
+    async getAllUsers(){
+        try {
+            const users = await this.userRepository.findAll({
+                order: [['id' , 'DESC']],
+                include: {all: true}})
+            return users.map((user)=>{
+                return{
+                    id: user.id,
+                    name: user.name,
+                    email: user.email,
+                    createdAt: user.createdAt,
+                    updatedAt: user.updatedAt,
+                    orders: user.orders,
+                    boats: user.boats,
+                    roles: user.roles,
+                    waitingForStatusConfirmation: user.waitingForStatusConfirmation
                 }
 
             });
@@ -89,13 +132,19 @@ export class UserService {
             email: user.email,
             createdAt: user.createdAt,
             updatedAt: user.updatedAt,
+            picture: user.picture,
             orders: user.orders,
             boats: user.boats,
             roles: user.roles,
-    }
+
+        }
     }
     async deleteUserById(id: string){
-        const user = await this.userRepository.destroy({where:{id}})
+        const user = await this.userRepository.findOne({where:{id}})
+        const orders = await this.orderRepository.destroy({where: {userId: user.id}})
+        const boats = await this.boatRepository.destroy({where: {userId: user.id}})
+
+        await user.destroy();
         return user
     }
 
@@ -109,5 +158,18 @@ export class UserService {
         return user
     }
 
+    async setUserWaitingForStatusConfirmationTrue(id: string){
+        const user = await this.userRepository.findOne({where: {id}})
+        user.waitingForStatusConfirmation = true;
+        await user.save()
+        return user;
+    }
+
+    async setUserWaitingForStatusConfirmationFalse(id: string){
+        const user = await this.userRepository.findOne({where: {id}})
+        user.waitingForStatusConfirmation = false;
+        await user.save()
+        return user;
+    }
 
 }

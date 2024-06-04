@@ -1,4 +1,4 @@
-import {Body, Controller, Get, HttpException, HttpStatus, Param, Post} from '@nestjs/common';
+import {Body, Controller, Delete, Get, HttpException, HttpStatus, Param, Post, Put} from '@nestjs/common';
 import {InjectModel} from "@nestjs/sequelize";
 import {Order} from "../order/order.model";
 import {UserService} from "../user/user.service";
@@ -16,15 +16,24 @@ export class ReviewController {
 
     @Post()
     async create(@Body() dto: ReviewCreationDto):Promise<Review>{
-        if(await this.reviewService.isCustomer(dto.userId, dto.boatId)){
             return await this.reviewService.create(dto);
         }
-        throw new HttpException("ПОльзователь не имеет права оставлять комментарий", HttpStatus.BAD_REQUEST)
-    }
+
 
     @Get()
     async getAll(): Promise<Review[]>{
         return await this.reviewService.getAll();
+    }
+
+    @Delete('/:id')
+    async deleteById(@Param('id') id: string){
+        return await this.reviewService.deleteById(id);
+    }
+
+    @Put()
+    async addAnswer(@Body() answer: {id: string, text: string}){
+        console.log(answer.text)
+        return await this.reviewService.addAnswer(answer.id, answer.text);
     }
 
     @Get('/userIsCustomer')
