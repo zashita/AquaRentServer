@@ -142,8 +142,11 @@ export class UserService {
     async deleteUserById(id: string){
         const user = await this.userRepository.findOne({where:{id}})
         const orders = await this.orderRepository.destroy({where: {userId: user.id}})
-        const boats = await this.boatRepository.destroy({where: {userId: user.id}})
-
+        const boats = await this.boatRepository.findAll({where: {userId: user.id}})
+        boats.map((boat) => {
+            const orders =  this.orderRepository.destroy({where: {boatId: boat.id}})
+        })
+        await this.boatRepository.destroy({where: {userId: user.id}})
         await user.destroy();
         return user
     }
