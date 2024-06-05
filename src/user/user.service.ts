@@ -60,7 +60,8 @@ export class UserService {
         const imagePath = await this.fileService.createFile(image);
         const user = await this.userRepository.findOne({where: {id}})
         user.picture = imagePath;
-        await user.save()
+        await user.save();
+        return user
 
     }
 
