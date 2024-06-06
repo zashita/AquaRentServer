@@ -137,6 +137,8 @@ export class UserService {
             orders: user.orders,
             boats: user.boats,
             roles: user.roles,
+            waitingForStatusConfirmation: user.waitingForStatusConfirmation
+
 
         }
     }
