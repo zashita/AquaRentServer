@@ -15,7 +15,7 @@ export class User extends Model<User, UserCreationAttrs>{
     @Column({type: DataType.UUID, unique: true, primaryKey: true, autoIncrement: false, defaultValue: DataType.UUIDV4})
     id: string;
 
-    @Column({type: DataType.STRING, unique: true, allowNull: true})
+    @Column({type: DataType.STRING, allowNull: true})
     name: string;
 
     @Column({type: DataType.STRING, unique: true, allowNull: false})

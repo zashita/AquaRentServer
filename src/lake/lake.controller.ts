@@ -9,12 +9,12 @@ export class LakeController {
 
     @Get()
     async getAll(){
-        return this.lakeService.getAll()
+        return await this.lakeService.getAll()
     }
 
     @Post()
     async create(@Body() name: string){
-        return this.lakeService.create(name)
+        return await this.lakeService.create(name)
     }
 
 }

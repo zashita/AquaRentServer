@@ -20,11 +20,11 @@ export class OrderController {
 
     @Get('/user/:id')
     async getUserBoatsOrders(@Param('id') id: string){
-        return this.orderService.getUserBoatsOrders(id);
+        return await this.orderService.getUserBoatsOrders(id);
     }
 
     @Put('update/:id')
     async updateOrderState(@Param('id') id: string){
-        return this.orderService.updateOrderState(id)
+        return await this.orderService.updateOrderState(id)
     }
 }

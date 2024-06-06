@@ -20,22 +20,22 @@ export class UserController {
 
     @Get()
     async getAll(){
-        return this.userService.getAllUsers()
+        return await this.userService.getAllUsers()
     }
 
     @Get('/notConfirmed')
     async getNotConfirmed(){
-        return this.userService.getNotConfirmed()
+        return await this.userService.getNotConfirmed()
     }
 
     @Put('/seller/:id')
     async makeSeller(@Param('id') id: string){
-        return this.userService.setSeller(id)
+        return await this.userService.setSeller(id)
     }
 
     @Get('/:id')
     async getUserProfile(@Param('id') id: string){
-        return this.userService.getUserProfile(id);
+        return await this.userService.getUserProfile(id);
     }
 
     @Put('/changePicture/:id')
@@ -47,17 +47,17 @@ export class UserController {
 
     @Delete('/:id')
     async deleteUserById(@Param('id') id: string){
-        return this.userService.deleteUserById(id)
+        return await this.userService.deleteUserById(id)
     }
 
     @Put('/setStatusWaiting/:id')
     async setUserWaitingForStatusConfirmationTrue(@Param('id') id: string){
-        return this.userService.setUserWaitingForStatusConfirmationTrue(id);
+        return await this.userService.setUserWaitingForStatusConfirmationTrue(id);
     }
 
     @Put('/setStatusWaitingFalse/:id')
     async setUserWaitingForStatusConfirmationFalse(@Param('id') id: string){
-        return this.userService.setUserWaitingForStatusConfirmationFalse(id);
+        return await this.userService.setUserWaitingForStatusConfirmationFalse(id);
     }
 
 

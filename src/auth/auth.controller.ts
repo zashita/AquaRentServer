@@ -8,17 +8,17 @@ export class AuthController {
     }
 
     @Post('/login')
-    login(@Body() dto: UserCreationDto){
-        return this.authService.login(dto)
+    async login(@Body() dto: UserCreationDto){
+        return await this.authService.login(dto)
     }
 
     @Post('/registration')
-    registration(@Body() dto: UserCreationDto){
-        return this.authService.registration(dto)
+    async registration(@Body() dto: UserCreationDto){
+        return await this.authService.registration(dto)
     }
 
     @Post('/registration/admin')
-    registrationAdmin(@Body() dto: UserCreationDto){
-        return this.authService.registrationAdmin(dto)
+    async registrationAdmin(@Body() dto: UserCreationDto){
+        return await this.authService.registrationAdmin(dto)
     }
 }

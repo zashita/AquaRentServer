@@ -38,6 +38,6 @@ export class ReviewController {
 
     @Get('/userIsCustomer')
     async getIsCustomer(@Body() userData: {userId: string, boatId: string}){
-        return this.reviewService.isCustomer(userData.userId, userData.boatId)
+        return await this.reviewService.isCustomer(userData.userId, userData.boatId)
     }
 }

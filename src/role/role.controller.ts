@@ -8,17 +8,17 @@ export class RoleController {
     }
 
     @Post()
-    create(@Body() dto: RoleCreationDto){
-        return this.roleService.create(dto);
+    async create(@Body() dto: RoleCreationDto){
+        return await this.roleService.create(dto);
     }
 
     @Get('/:value')
-    getRoleByValue(@Param('value') value: string){
-        return this.roleService.getRoleByValue(value);
+    async getRoleByValue(@Param('value') value: string){
+        return await this.roleService.getRoleByValue(value);
     }
 
     @Get()
-    getAllRoles(){
-        return this.roleService.getAll();
+    async getAllRoles(){
+        return await this.roleService.getAll();
     }
 }
