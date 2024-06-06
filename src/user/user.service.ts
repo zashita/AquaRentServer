@@ -135,7 +135,7 @@ export class UserService {
             updatedAt: user.updatedAt,
             picture: user.picture,
             orders: user.orders,
-            boats: user.boats,
+            boats: user.boats.filter((boat)=> boat.confirmed),
             roles: user.roles,
             waitingForStatusConfirmation: user.waitingForStatusConfirmation
 

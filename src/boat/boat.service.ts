@@ -1,13 +1,12 @@
-import {forwardRef, HttpException, HttpStatus, Inject, Injectable, Query} from '@nestjs/common';
+import {forwardRef, HttpException, HttpStatus, Inject, Injectable} from '@nestjs/common';
 import {InjectModel} from "@nestjs/sequelize";
 import {Boat, BoatTypes, MoveType} from "./boat.model";
 import {BoatCreationDto} from "./dto/boatCreation.dto";
 import {UserService} from "../user/user.service";
 import {FilesService} from "../files/files.service";
-import {Op, where} from "sequelize";
 import {LakeService} from "../lake/lake.service";
 import {OrderService} from "../order/order.service";
-import {Order} from "../order/order.model";
+import {Order, OrderStates} from "../order/order.model";
 
 @Injectable()
 export class BoatService {
@@ -122,6 +121,7 @@ export class BoatService {
             if(!boat){
                 throw new HttpException( HttpStatus,.404)
             }
+            boat.orders = boat.orders.filter((order)=> order.state !== OrderStates.FINISHED)
             return boat;
         } catch (e) {
             console.log(e, 'Ошибка при промотре лодки')

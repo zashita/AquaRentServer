@@ -4,7 +4,6 @@ import {Order, OrderStates} from "./order.model";
 import {OrderCreationDto} from "./dto/OrderCreation.dto";
 import {UserService} from "../user/user.service";
 import {BoatService} from "../boat/boat.service";
-import dayjs, {Dayjs} from "dayjs";
 import {MailService} from "../mail/mail.service";
 
 @Injectable()
@@ -64,10 +63,10 @@ export class OrderService {
     async checkOrderDates(newDate: number, newDateEnd: number){
         const orders = await this.orderRepository.findAll();
         return !orders.find((order) =>
-            (newDate >= order.date && newDate <= order.dateEnd)
+            ((newDate >= order.date && newDate <= order.dateEnd)
             ||
             (newDateEnd >= order.date && newDateEnd <= order.dateEnd)
-            || newDate <= order.date && newDateEnd >= order.dateEnd);
+            || newDate <= order.date && newDateEnd >= order.dateEnd)&&order.state !== OrderStates.FINISHED);
     }
 
     async getAll():Promise<Order[]>{
@@ -82,7 +81,7 @@ export class OrderService {
     async getUserBoatsOrders(userId: string){
         const orders = await this.orderRepository.findAll({include:{all: true},
             order:[['id' , 'DESC']]})
-        const userOrders = orders.filter((order)=> order.boat.userId === userId)
+        const userOrders = orders.filter((order)=> order.boat.userId === userId && order.state !== OrderStates.FINISHED)
         return userOrders
 
 
